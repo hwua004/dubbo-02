@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://dubbo.apache.org/schema/dubbo http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
+    <!--
+        给项目起一个名字，建议和项目名保持一致，并与其他的项目名不重复
+        注意，引入命名空间的时候，是xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+    -->
+    <dubbo:application name="dubbo-provider"/>
+
+    <!--
+        指定远程调用的协议和端口号，在消费者调用提供者的过程中，一定是走网络写协议的
+        那么dubbo默认使用dubbo协议，并且官方也支持个建议使用dubbo协议
+        20880是dubbo协议默认的端口号
+    -->
+    <dubbo:protocol name="dubbo" port="20880"/>
+
+    <!--
+        把服务的提供者放入到spring的容器找那个
+    -->
+    <bean id="helloService" class="com.hwua.dubbo.serviceImpl.HelloServiceImpl"></bean>
+
+    <!--
+        把这个接口的实现，发布成一个可以被调用或者消费的服务
+        interface指定的是针对于哪一个api发布的实现
+        ref指向的是具体的api的实现,内容就是放在spring容器中的对应接口的实现类的id
+        registry用来指定注册中心，但是这个项目中我们暂时不用注册中心，消费者可以直接连接到提供者进行调用
+        N/A就表示不使用注册中心
+    -->
+    <dubbo:service interface="com.hwua.dubbo.service.HelloService"
+                   ref="helloService"
+                   />
+    <!--指定一个注册中心。这个注册中心是组播方式实现的，用于小范围的项目-->
+    <!--<dubbo:registry address="multicast://224.5.6.7:1234"/>-->
+
+    <!--使用zk 作为注册中心-->
+    <dubbo:registry address="zookeeper://192.168.1.100:2181"/>
+
+</beans>
